@@ -1,0 +1,21 @@
+NAMES                       IMAGE                             STATUS                       PORTS
+postgres_db                 postgres:15-alpine                Up 11 minutes (healthy)      5432/tcp
+label-studio-app            heartexlabs/label-studio:latest   Up 11 minutes                0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+redis                       redis:8.8.0-alpine                Up 31 minutes (healthy)      0.0.0.0:6380->6379/tcp, [::]:6380->6379/tcp
+redis-stack                 redis/redis-stack:latest          Up 7 days                    0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp, 0.0.0.0:8001->8001/tcp, [::]:8001->8001/tcp
+mongodb-container           mongo:latest                      Exited (255) 2 weeks ago     0.0.0.0:27017->27017/tcp
+pgadmin                     dpage/pgadmin4                    Up 7 days                    443/tcp, 0.0.0.0:5050->80/tcp
+n8n                         n8nio/n8n                         Up 7 days                    0.0.0.0:5678->5678/tcp
+postgres                    ankane/pgvector                   Up 7 days                    0.0.0.0:5432->5432/tcp
+my-compose-web-9            my-compose-web                    Exited (255) 13 months ago   8000/tcp
+my-compose-web-8            my-compose-web                    Exited (255) 13 months ago   8000/tcp
+my-compose-web-7            my-compose-web                    Exited (255) 13 months ago   8000/tcp
+my-compose-loadbalancer-1   nginx                             Exited (255) 13 months ago   0.0.0.0:8080->80/tcp
+my-compose-redis-1          redis                             Exited (255) 13 months ago   6379/tcp
+gracious_faraday            flaskhello                        Exited (1) 16 months ago     
+suspicious_khayyam          flaskhello                        Exited (1) 16 months ago     
+angry_golick                flaskhello                        Exited (130) 16 months ago   
+nifty_sammet                flaskhello                        Exited (1) 16 months ago     
+cranky_boyd                 flaskhello                        Exited (1) 16 months ago     
+distracted_einstein         flaskhello                        Exited (1) 16 months ago     
+elastic_antonelli           ubuntu                            Exited (0) 16 months ago     

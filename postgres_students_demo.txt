@@ -1,0 +1,31 @@
+---
+Postgres students demo commands and outputs
+---
+CREATE TABLE
+INSERT 0 2
+--- SELECT * ---
+ id | name  | age | major 
+----+-------+-----+-------
+  1 | Alice |  22 | CS
+  2 | Bob   |  23 | Math
+(2 rows)
+
+--- UPDATE ---
+UPDATE 1
+--- SELECT * ---
+ id | name  | age | major 
+----+-------+-----+-------
+  2 | Bob   |  23 | Math
+  1 | Alice |  23 | CS
+(2 rows)
+
+--- DELETE ---
+DELETE 1
+--- SELECT * ---
+ id | name  | age | major 
+----+-------+-----+-------
+  1 | Alice |  23 | CS
+(1 row)
+
+--- DROP TABLE ---
+DROP TABLE

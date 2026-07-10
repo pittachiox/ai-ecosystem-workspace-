@@ -1,0 +1,13 @@
+HTTP/1.1 302 Found
+Date: Fri, 10 Jul 2026 08:06:40 GMT
+Server: WSGIServer/0.2 CPython/3.13.12
+Content-Type: text/html; charset=utf-8
+Location: /user/login/
+Content-Security-Policy-Report-Only: script-src 'self' 'report-sample' 'unsafe-inline' blob: browser.sentry-cdn.com https://*.googletagmanager.com; connect-src 'self' 'report-sample' https://*.google-analytics.com https://*.analytics.google.com https://analytics.google.com https://*.googletagmanager.com https://*.g.doubleclick.net https://*.ingest.sentry.io; default-src 'self' 'report-sample'; img-src 'self' 'report-sample' data: https://*.google-analytics.com https://*.googletagmanager.com https://*.google.com; style-src 'self' 'report-sample' 'unsafe-inline'
+Vary: Accept-Language, Cookie, origin
+Content-Language: en-us
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
+Set-Cookie:  sessionid=eyJ1aWQiOiJmYzMyYWE5Yy04ZWYyLTQ2Y2YtYTQ3Zi1hOTdlOTA4NDRhNzgifQ:1wi6Fs:ByXVHdExrCpzR06qXR9KYg0RyduHQh0EddFhu4yHfhk; expires=Fri, 24 Jul 2026 08:06:40 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax
+

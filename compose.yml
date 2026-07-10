@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "6379:6379"
+      - "6380:6379"
 
     volumes:
       - redis-data:/data
@@ -20,5 +20,40 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: labelstudio
+      POSTGRES_PASSWORD: labelstudio_pass
+      POSTGRES_DB: labelstudio_db
+    # no host port mapping to avoid conflicts with other postgres instances
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  label-studio:
+    image: heartexlabs/label-studio:latest
+    container_name: label-studio-app
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://labelstudio:labelstudio_pass@postgres:5432/labelstudio_db
+      LABEL_STUDIO_HOST: 0.0.0.0
+      LABEL_STUDIO_PORT: "8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - labelstudio-data:/label-studio
+    command: ["label-studio", "start", "--host", "0.0.0.0", "--port", "8080"]
+
 volumes:
   redis-data:
+  postgresql-data:
+  labelstudio-data:
