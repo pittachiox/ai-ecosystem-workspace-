@@ -1,0 +1,20 @@
+# Virtual environment
+.venv
+
+# uv lock and environment files
+uv.lock
+.uv
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+
+# Label Studio local data
+labelstudio-data/
+
+# IDE/editor files
+.vscode/
+.DS_Store

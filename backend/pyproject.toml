@@ -1,0 +1,14 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.8"
+dependencies = [
+    "arq>=0.26.3",
+    "label-studio-sdk>=1.0.8",
+    "psycopg2-binary>=2.9.10",
+    "pydantic>=2.10.6",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.1",
+    "sqlalchemy>=2.0.51",
+]
