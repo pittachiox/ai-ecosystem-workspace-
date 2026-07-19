@@ -4,7 +4,7 @@ from arq.connections import RedisSettings
 from core.config import settings
 
 
-def simple_work(ctx, data):
+async def simple_work(ctx, data):
     print("Processing job data:", data)
     return {"status": "done", "data": data}
 

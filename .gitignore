@@ -1,0 +1,23 @@
+# Root gitignore for repo
+
+# Python environment
+backend/.venv/
+
+# Environment variables
+backend/.env
+
+# Label Studio local data
+backend/labelstudio-data/
+backend/label_studio_reports/
+
+# uv and environment lock files
+backend/uv.lock
+backend/.uv
+
+# Python caches
+backend/__pycache__/
+backend/*.py[cod]
+
+# IDE/editor files
+backend/.vscode/
+.DS_Store

@@ -6,6 +6,7 @@ requires-python = ">=3.8"
 dependencies = [
     "arq>=0.26.3",
     "label-studio-sdk>=1.0.8",
+    "psycopg>=3.2.13",
     "psycopg2-binary>=2.9.10",
     "pydantic>=2.10.6",
     "pydantic-settings>=2.0.0",
