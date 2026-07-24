@@ -20,6 +20,12 @@ services:
       timeout: 5s
       retries: 5
 
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   postgres:
     image: postgres:15-alpine
     container_name: postgres_db
@@ -37,6 +43,12 @@ services:
       timeout: 5s
       retries: 5
 
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   label-studio:
     image: heartexlabs/label-studio:latest
     container_name: label-studio-app
@@ -52,6 +64,12 @@ services:
     volumes:
       - labelstudio-data:/label-studio
     command: ["label-studio", "start", "--host", "0.0.0.0", "--port", "8080"]
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   minio:
     image: minio/minio:latest
@@ -71,6 +89,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   redis-data:
