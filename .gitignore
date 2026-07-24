@@ -18,6 +18,16 @@ backend/.uv
 backend/__pycache__/
 backend/*.py[cod]
 
+# Generated artifacts and local downloads
+storage/
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.log
+*.log.*
+*.JPG
+
 # IDE/editor files
 backend/.vscode/
 .DS_Store

@@ -15,9 +15,13 @@ class Settings(BaseSettings):
     label_studio_url: str = "http://localhost:8080"
     label_studio_api_key: Optional[str] = None
     arq_redis_queue_name: str = "default"
+    minio_endpoint: str = "localhost:9000"
+    minio_access_key: str = "minioadmin"
+    minio_secret_key: str = "minioadmin_pass"
+    minio_secure: bool = False
 
     class Config:
-        env_file = Path(".env")
+        env_file = Path(__file__).resolve().parent.parent / ".env"
         env_file_encoding = "utf-8"
 
     @property
