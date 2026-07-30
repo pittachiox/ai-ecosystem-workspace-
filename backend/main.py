@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers.item_router import router as item_router
-from .core.config import settings
+from routers.ai_router import ai_router
 
-app = FastAPI(title="FastAPI & AI Ecosystem Skeleton API", version="1.0.0")
+app = FastAPI(title="AI LLM Inference API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -12,8 +11,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(item_router)
+
+app.include_router(ai_router)
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+async def root():
+    return {"message": "Welcome to AI LLM Inference API"}
