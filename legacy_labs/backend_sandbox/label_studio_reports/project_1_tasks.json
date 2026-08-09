@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "data": {
+      "text": "The product arrived on time and works well."
+    },
+    "annotations": []
+  },
+  {
+    "id": 2,
+    "data": {
+      "text": "I am unhappy with the customer service."
+    },
+    "annotations": []
+  },
+  {
+    "id": 3,
+    "data": {
+      "text": "It is okay, but could be better."
+    },
+    "annotations": []
+  }
+]

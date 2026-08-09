@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+minio
+label-studio-sdk
+redis
+arq
+pandas
+openpyxl
+pydantic
+pydantic-settings
+requests

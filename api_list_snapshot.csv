@@ -1,0 +1,14 @@
+﻿path,method,tag,summary,description,parameters
+/storage/upload,POST,Storage,Upload file to MinIO,Upload a local file into a MinIO bucket.,[]
+/storage/files,GET,Storage,List files in bucket,Returns object names available in the configured MinIO bucket.,"[{""name"": ""bucket_name"", ""in"": ""query"", ""required"": false, ""description"": ""Bucket name""}]"
+/storage/presigned-url,GET,Storage,Create a temporary presigned URL,Generate a temporary access URL for an object stored in MinIO.,"[{""name"": ""bucket_name"", ""in"": ""query"", ""required"": false, ""description"": ""Bucket name""}, {""name"": ""object_name"", ""in"": ""query"", ""required"": true, ""description"": ""Object key""}]"
+/ls/projects,POST,Labeling,Create a Label Studio project,Create a new project in Label Studio.,[]
+/ls/import-data,POST,Labeling,Import data into a project,Import MinIO URL data as tasks into a Label Studio project.,[]
+/ls/export-labels,GET,Labeling,Export labels,Export annotations from Label Studio in JSON or COCO format.,"[{""name"": ""project_id"", ""in"": ""query"", ""required"": true, ""description"": ""Project ID""}, {""name"": ""export_type"", ""in"": ""query"", ""required"": false, ""description"": ""Export format""}]"
+/timeseries/process,POST,Time-Series,Queue time-series preprocessing,Send time-series preprocessing to the background worker queue.,[]
+/timeseries/train,POST,Time-Series,Queue time-series training,Send a time-series training job to the background worker queue.,[]
+/timeseries/forecast,POST,Time-Series,Generate forecast,Run the forecasting job for time-series inference.,[]
+/nontimeseries/train,POST,Non-Time-Series,Queue image model training,Send a non-time-series training job for image preprocessing and model training.,[]
+/nontimeseries/predict,POST,Non-Time-Series,Predict image class,Queue a prediction job for image classification inference.,[]
+/,GET,,Service root,Root endpoint for the AI ecosystem service.,[]
+/health,GET,,Health check,Returns the HTTP service status for deployment and orchestration checks.,[]
