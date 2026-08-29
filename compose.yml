@@ -1,103 +1,45 @@
-services:
-  redis:
-    image: redis:8.8.0-alpine
-    container_name: redis
-    restart: unless-stopped
 
+
+services:
+  ai-redis:
+    image: redis:alpine
     ports:
       - "6380:6379"
 
-    volumes:
-      - redis-data:/data
-
-    command: >
-      redis-server
-      --appendonly yes
-
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  postgres:
-    image: postgres:15-alpine
-    container_name: postgres_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: labelstudio
-      POSTGRES_PASSWORD: labelstudio_pass
-      POSTGRES_DB: labelstudio_db
-    # no host port mapping to avoid conflicts with other postgres instances
-    volumes:
-      - postgresql-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  label-studio:
-    image: heartexlabs/label-studio:latest
-    container_name: label-studio-app
-    restart: unless-stopped
-    depends_on:
-      - postgres
-    environment:
-      DATABASE_URL: postgresql://labelstudio:labelstudio_pass@postgres:5432/labelstudio_db
-      LABEL_STUDIO_HOST: 0.0.0.0
-      LABEL_STUDIO_PORT: "8080"
-    ports:
-      - "8080:8080"
-    volumes:
-      - labelstudio-data:/label-studio
-    command: ["label-studio", "start", "--host", "0.0.0.0", "--port", "8080"]
-
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    restart: unless-stopped
+  ai-minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
     ports:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_ROOT_USER: pittachiox
-      MINIO_ROOT_PASSWORD: pitta15418
-    volumes:
-      - minio-data:/data
-    command: server /data --console-address ":9001"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
 
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+  ai_fastapi:
+    build: ./fastapi_app
+    container_name: ai_fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_HOST=ai-redis
+      - REDIS_PORT=6379
+      - MINIO_HOST=ai-minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    depends_on:
+      - ai-redis
+      - ai-minio
 
-volumes:
-  redis-data:
-  postgresql-data:
-  labelstudio-data:
-  minio-data:
+  ai_trainer_worker:
+    build: ./trainer_worker
+    container_name: ai_trainer_worker
+    environment:
+      - REDIS_HOST=ai-redis
+      - REDIS_PORT=6379
+      - MINIO_HOST=ai-minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    depends_on:
+      - ai-redis
+      - ai-minio
