@@ -1,4 +1,6 @@
-FROM python:3.10-slim
+FROM pytorch/pytorch:2.1.0-cuda12.1-cudnn8-runtime
+
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
@@ -15,4 +17,4 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 # Copy application code
 COPY . /app
 
-CMD ["python", "worker.py"]
+CMD ["python", "-u", "worker.py"]

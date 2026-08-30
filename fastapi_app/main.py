@@ -88,34 +88,35 @@ def import_dataset(req: DatasetImportRequest):
 
 
 class EnqueueRequest(BaseModel):
-	dataset_id: str
-	model_name: Optional[str] = "bert-base-cased"
-	epochs: Optional[int] = 1
-	batch_size: Optional[int] = 8
+	job_id: str
+	dataset_name: str
+	base_model: Optional[str] = "bert-base-cased"
+	delay_seconds: Optional[int] = 0
 
 
 @app.post("/api/v1/train/enqueue")
 def enqueue_train(req: EnqueueRequest):
-	import uuid
+	# Use provided job_id and schedule with ZADD using scheduled_at as score
+	job_id = req.job_id
+	delay_seconds = int(req.delay_seconds or 0)
+	scheduled_at = int(time.time()) + delay_seconds
 
-	task_id = str(uuid.uuid4())
 	payload = {
-		"task_id": task_id,
-		"dataset_id": req.dataset_id,
-		"model_name": req.model_name,
-		"epochs": req.epochs,
-		"batch_size": req.batch_size,
-		"queued_at": time.time(),
+		"job_id": job_id,
+		"dataset_name": req.dataset_name,
+		"base_model": req.base_model,
+		"scheduled_at": scheduled_at,
+		"queued_at": int(time.time()),
 	}
 
 	job_json = json.dumps(payload)
 
 	try:
-		# push to Redis list for blocking consumption
-		redis_client.rpush("train_jobs", job_json)
-		# set initial status
-		redis_client.set(f"train_job:{task_id}", json.dumps({"status": "queued", "task_id": task_id}))
+		# add JSON payload as zset member with score=scheduled_at
+		redis_client.zadd("scheduled_training_queue", {job_json: scheduled_at})
+		# set initial status key for lookup
+		redis_client.set(f"train_job:{job_id}", json.dumps({"status": "enqueued", "job_id": job_id, "scheduled_at": scheduled_at}))
 	except Exception as e:
-		raise HTTPException(status_code=500, detail=f"Failed to enqueue job: {e}")
+		raise HTTPException(status_code=500, detail=f"Failed to schedule job: {e}")
 
-	return {"task_id": task_id, "status": "queued"}
+	return {"status": "enqueued", "queue_name": "scheduled_training_queue", "job_id": job_id, "scheduled_at": scheduled_at, "delay_seconds": delay_seconds}
