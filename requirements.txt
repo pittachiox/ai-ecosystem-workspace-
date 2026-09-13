@@ -9,3 +9,5 @@ openpyxl
 pydantic
 pydantic-settings
 requests
+mlflow
+scikit-learn

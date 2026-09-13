@@ -1,0 +1,108 @@
+services:
+  postgres_db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: mlflow
+      POSTGRES_PASSWORD: mlflow
+      POSTGRES_DB: mlflow_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # host 5432 may be in use by legacy stack; map to 5433 locally to avoid conflict
+      - "5433:5432"
+
+  redis:
+    image: redis:6
+    # no host port mapped to avoid conflicts with existing Redis on host
+
+  mlflow:
+    image: python:3.11-slim
+    command: sh -c "pip install --no-cache-dir mlflow psycopg2-binary boto3 && mlflow server --backend-store-uri postgresql://mlflow:mlflow@postgres_db:5432/mlflow_db --default-artifact-root s3://mlflow/ --host 0.0.0.0 --port 5000"
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      # try to relax proxy/host header handling for Gunicorn/Proxy
+      GUNICORN_CMD_ARGS: "--forwarded-allow-ips='*' --proxy-allow-from='*'"
+      MLFLOW_SERVER_HOST: 0.0.0.0
+    depends_on:
+      - postgres_db
+      - minio
+
+  fastapi_app:
+    build:
+      context: .
+      dockerfile: Dockerfile.fastapi
+    ports:
+      - "8002:8000"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      MLFLOW_ALLOW_FILE_STORE: "true"
+    depends_on:
+      - redis
+      - mlflow
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+
+  mc_init:
+    image: python:3.11-slim
+    depends_on:
+      - minio
+    volumes:
+      - ./scripts:/scripts
+    entrypoint: ["/bin/sh", "-c"]
+    command: "pip install --no-cache-dir boto3 && python /scripts/create_minio_bucket.py"
+    environment:
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_DEFAULT_BUCKET: mlflow
+
+  trainer_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.trainer
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_ALLOW_FILE_STORE: "true"
+    depends_on:
+      - mlflow
+      - redis
+    volumes:
+      - mlflow_runners:/mlruns
+
+  inference_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.inference
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_ALLOW_FILE_STORE: "true"
+    depends_on:
+      - redis
+      - mlflow
+    volumes:
+      - mlflow_runners:/mlruns
+
+volumes:
+  pgdata:
+  mlflow_artifacts:
+  minio_data:
+  mlflow_runners:

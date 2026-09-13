@@ -12,7 +12,14 @@ class LabelStudioService:
     def __init__(self, url: str | None = None, api_key: str | None = None) -> None:
         self.url = url or settings.label_studio_url
         self.api_key = api_key or settings.label_studio_api_key
-        self.client = Client(url=self.url, api_key=self.api_key)
+        # lazy client: do not contact external service during import/startup
+        self._client = None
+
+    @property
+    def client(self):
+        if self._client is None:
+            self._client = Client(url=self.url, api_key=self.api_key)
+        return self._client
 
     def create_project(self, title: str, description: str = "", label_config: str = "") -> dict[str, Any]:
         project = self.client.projects.create(
@@ -38,4 +45,11 @@ class LabelStudioService:
         return response.json() if response.headers.get("Content-Type", "").lower().endswith("json") else response.content
 
 
-label_studio_service = LabelStudioService()
+_label_studio_service: LabelStudioService | None = None
+
+
+def get_label_studio_service() -> LabelStudioService:
+    global _label_studio_service
+    if _label_studio_service is None:
+        _label_studio_service = LabelStudioService()
+    return _label_studio_service

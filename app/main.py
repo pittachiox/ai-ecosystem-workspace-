@@ -3,7 +3,13 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import label_studio_router, nontimeseries_router, storage_router, timeseries_router
+from app.api.v1 import (
+    label_studio_router,
+    nontimeseries_router,
+    storage_router,
+    timeseries_router,
+)
+from app.api.v1.inference_router import router as inference_router
 
 app = FastAPI(
     title="AI Ecosystem API",
@@ -29,6 +35,7 @@ app.include_router(storage_router.router)
 app.include_router(label_studio_router.router)
 app.include_router(timeseries_router.router)
 app.include_router(nontimeseries_router.router)
+app.include_router(inference_router)
 
 
 @app.get("/", summary="Service root", description="Root endpoint for the AI ecosystem service.")

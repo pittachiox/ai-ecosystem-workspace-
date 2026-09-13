@@ -24,6 +24,13 @@ class Settings(BaseSettings):
     label_studio_url: str = Field(default="http://localhost:8080", alias="LABEL_STUDIO_URL")
     label_studio_api_key: str = Field(default="", alias="LABEL_STUDIO_API_KEY")
 
+    # MLflow / model registry settings
+    mlflow_tracking_uri: str = Field(default="http://localhost:5000", alias="MLFLOW_TRACKING_URI")
+    mlflow_s3_endpoint_url: str = Field(default="http://localhost:9000", alias="MLFLOW_S3_ENDPOINT_URL")
+    aws_access_key_id: str = Field(default="minioadmin", alias="AWS_ACCESS_KEY_ID")
+    aws_secret_access_key: str = Field(default="minioadmin", alias="AWS_SECRET_ACCESS_KEY")
+    mlflow_artifact_root: str = Field(default="s3://mlflow/", alias="MLFLOW_ARTIFACT_ROOT")
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 
