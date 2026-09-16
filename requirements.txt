@@ -1,5 +1,5 @@
 fastapi
-uvicorn
+uvicorn[standard]
 minio
 label-studio-sdk
 redis
@@ -13,3 +13,15 @@ mlflow
 scikit-learn
 boto3
 psycopg2-binary
+# Observability - OpenTelemetry SDK
+opentelemetry-sdk
+opentelemetry-api
+opentelemetry-exporter-otlp-proto-grpc
+opentelemetry-exporter-otlp-proto-http
+opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-redis
+opentelemetry-instrumentation-logging
+opentelemetry-instrumentation-requests
+opentelemetry-semantic-conventions
+# Prometheus metrics exporter for FastAPI
+prometheus-fastapi-instrumentator

@@ -4,16 +4,32 @@ import json
 import os
 import time
 import traceback
+import logging
 from typing import Any
 
 import mlflow
 import mlflow.pyfunc
 from mlflow.tracking import MlflowClient
 import redis
+from opentelemetry import trace, metrics
 
 from app.core.config import settings
+from app.core.telemetry import setup_telemetry
 
 _model_cache: dict[str, Any] = {}
+
+logger = logging.getLogger(__name__)
+
+# Initialize telemetry for the worker service
+setup_telemetry(service_name=os.getenv("OTEL_SERVICE_NAME", "inference-worker"))
+
+# Tracer & Meter for explicit spans and metrics
+tracer = trace.get_tracer(__name__)
+meter = metrics.get_meter(__name__)
+
+# Metrics instruments
+jobs_counter = meter.create_counter("inference_jobs_total")
+jobs_latency = meter.create_histogram("inference_job_latency_ms")
 
 
 def setup_mlflow_env() -> str:
@@ -108,7 +124,7 @@ def process_message(msg: str, r: redis.Redis) -> None:
     model_name = payload.get("model_name") or "conll2003_ner"
     input_data = payload.get("input") if payload.get("input") is not None else payload.get("text")
 
-    print(f"[inference_worker] Processing job_id={job_id}, model={model_name}")
+    logger.info("Processing job", extra={"job_id": job_id, "model": model_name})
 
     # Set processing status in Redis
     r.set(
@@ -117,9 +133,40 @@ def process_message(msg: str, r: redis.Redis) -> None:
     )
     r.hset(f"job:{job_id}", mapping={"status": "processing"})
 
+    start_ts = time.time()
     try:
-        model = load_model_from_registry(model_name)
-        result = predict(model, input_data)
+        # Top-level span for processing the inference job
+        with tracer.start_as_current_span("process_inference_job") as job_span:
+            job_span.set_attribute("job.id", str(job_id))
+            job_span.set_attribute("model.name", model_name)
+
+            model = load_model_from_registry(model_name)
+
+            # Inner span for the actual NER execution
+            with tracer.start_as_current_span("execute_ner_inference") as infer_span:
+                infer_span.set_attribute("job.id", str(job_id))
+                infer_span.set_attribute("model.name", model_name)
+
+                infer_start = time.time()
+                result = predict(model, input_data)
+                infer_latency = (time.time() - infer_start) * 1000.0
+
+                # Record attributes about result
+                entities_count = 0
+                try:
+                    if isinstance(result, dict) and "entities" in result:
+                        entities_count = len(result.get("entities", []))
+                except Exception:
+                    entities_count = 0
+
+                infer_span.set_attribute("entities.count", int(entities_count))
+                infer_span.set_attribute("latency_ms", float(infer_latency))
+
+        total_latency = (time.time() - start_ts) * 1000.0
+
+        # Update Prometheus/OpenTelemetry metrics
+        jobs_counter.add(1, attributes={"model": model_name, "status": "completed"})
+        jobs_latency.record(total_latency, attributes={"model": model_name})
 
         result_payload = {
             "job_id": job_id,
@@ -139,10 +186,9 @@ def process_message(msg: str, r: redis.Redis) -> None:
                 "result": json.dumps(result_payload),
             },
         )
-        print(f"[inference_worker] Job {job_id} completed successfully")
+        logger.info("Job completed", extra={"job_id": job_id, "latency_ms": total_latency})
 
     except Exception as exc:
-        print(f"[inference_worker] Error processing job {job_id}: {exc}")
         traceback.print_exc()
         error_payload = {
             "job_id": job_id,
@@ -153,6 +199,9 @@ def process_message(msg: str, r: redis.Redis) -> None:
         }
         r.set(f"inference-result:{job_id}", json.dumps(error_payload))
         r.hset(f"job:{job_id}", mapping={"status": "failed", "error": str(exc)})
+
+        jobs_counter.add(1, attributes={"model": model_name, "status": "failed"})
+        logger.error("Job failed", extra={"job_id": job_id, "error": str(exc)})
 
 
 def main():

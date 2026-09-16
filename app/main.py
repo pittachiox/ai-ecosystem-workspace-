@@ -3,6 +3,11 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+# Telemetry / Metrics
+from app.core.telemetry import setup_telemetry
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+from prometheus_fastapi_instrumentator import Instrumentator
+
 from app.api.v1 import (
     label_studio_router,
     nontimeseries_router,
@@ -10,6 +15,9 @@ from app.api.v1 import (
     timeseries_router,
 )
 from app.api.v1.inference_router import router as inference_router
+
+# Initialize OpenTelemetry (traces, metrics, logs)
+setup_telemetry(service_name="fastapi-app")
 
 app = FastAPI(
     title="AI Ecosystem API",
@@ -36,6 +44,12 @@ app.include_router(label_studio_router.router)
 app.include_router(timeseries_router.router)
 app.include_router(nontimeseries_router.router)
 app.include_router(inference_router)
+
+# Instrument FastAPI with OpenTelemetry automatically
+FastAPIInstrumentor.instrument_app(app)
+
+# Expose Prometheus metrics at /metrics
+Instrumentator().instrument(app).expose(app)
 
 
 @app.get("/", summary="Service root", description="Root endpoint for the AI ecosystem service.")
