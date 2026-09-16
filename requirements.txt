@@ -11,3 +11,5 @@ pydantic-settings
 requests
 mlflow
 scikit-learn
+boto3
+psycopg2-binary
