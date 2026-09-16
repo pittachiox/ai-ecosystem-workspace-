@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="820" viewBox="0 0 1280 820">
+  <style>
+    .title { font: bold 18px sans-serif; fill: white }
+    .subtitle { font: 12px sans-serif; fill: white }
+    .box-title { font: bold 14px sans-serif; fill: white }
+    .box-text { font: 12px sans-serif; fill: white }
+    .label { font: 12px sans-serif; fill: black }
+    .arrow { stroke: #000; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+    .edge-label { font: 12px sans-serif; fill: #000; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+    </marker>
+  </defs>
+
+  <!-- Title Banner -->
+  <rect x="20" y="20" width="1240" height="80" rx="6" ry="6" fill="#2B65EC" />
+  <text x="640" y="45" class="title" text-anchor="middle">AI Ecosystem — WTN-A09: Observability Architecture Diagram</text>
+  <text x="640" y="68" class="subtitle" text-anchor="middle">Distributed Tracing (Tempo), Time-Series Metrics (Prometheus), Log Aggregation (Loki), OTel Collector &amp; Grafana UI</text>
+
+  <!-- Left Column boxes -->
+  <rect x="20" y="120" width="260" height="120" rx="8" fill="#3B82F6" />
+  <text x="150" y="145" class="box-title" text-anchor="middle">FastAPI Web API</text>
+  <text x="40" y="170" class="box-text">Port: 8000</text>
+  <text x="40" y="188" class="box-text">OTLP Traces &amp; Metrics</text>
+  <text x="40" y="206" class="box-text">Prometheus: /metrics</text>
+  <text x="40" y="224" class="box-text">Structured JSON Logs</text>
+
+  <rect x="20" y="260" width="260" height="120" rx="8" fill="#7C3AED" />
+  <text x="150" y="285" class="box-title" text-anchor="middle">Inference Worker</text>
+  <text x="40" y="310" class="box-text">Redis Queue Daemon</text>
+  <text x="40" y="328" class="box-text">OTLP Spans &amp; Metrics</text>
+  <text x="40" y="346" class="box-text">Token Classification</text>
+  <text x="40" y="364" class="box-text">Structured Logs</text>
+
+  <rect x="20" y="400" width="260" height="120" rx="8" fill="#7C3AED" />
+  <text x="150" y="425" class="box-title" text-anchor="middle">Trainer Worker</text>
+  <text x="40" y="450" class="box-text">Fine-tuning Daemon</text>
+  <text x="40" y="468" class="box-text">PyTorch Model Training</text>
+  <text x="40" y="486" class="box-text">MLflow Logging</text>
+  <text x="40" y="504" class="box-text">Telemetry Events</text>
+
+  <!-- Center-Left: Collector -->
+  <rect x="320" y="200" width="300" height="220" rx="8" fill="#F97316" />
+  <text x="470" y="225" class="box-title" text-anchor="middle">OpenTelemetry Collector</text>
+  <text x="330" y="250" class="box-text">OTel Collector Contrib</text>
+  <text x="330" y="268" class="box-text">Receiver: OTLP gRPC 4317</text>
+  <text x="330" y="286" class="box-text">Receiver: OTLP HTTP 4318</text>
+  <text x="330" y="304" class="box-text">Processors: Batch, Memory</text>
+  <text x="330" y="322" class="box-text">Health: 13133</text>
+  <text x="330" y="340" class="box-text">Exporter: Prometheus 8889</text>
+  <text x="330" y="358" class="box-text">Exporter: Tempo &amp; Loki</text>
+
+  <!-- Center-Right: Backends -->
+  <rect x="650" y="120" width="260" height="120" rx="8" fill="#DC2626" />
+  <text x="780" y="145" class="box-title" text-anchor="middle">Prometheus Engine</text>
+  <text x="660" y="170" class="box-text">Port: 9090</text>
+  <text x="660" y="188" class="box-text">Scrapes /metrics &amp; 8889</text>
+  <text x="660" y="206" class="box-text">TSDB Storage</text>
+  <text x="660" y="224" class="box-text">AlertManager &amp; PromQL</text>
+
+  <rect x="650" y="260" width="260" height="120" rx="8" fill="#16A34A" />
+  <text x="780" y="285" class="box-title" text-anchor="middle">Grafana Loki Engine</text>
+  <text x="660" y="310" class="box-text">Port: 3100</text>
+  <text x="660" y="328" class="box-text">Centralized Log Index</text>
+  <text x="660" y="346" class="box-text">LogQL Query Language</text>
+  <text x="660" y="364" class="box-text">Chunk Store (Filesystem)</text>
+
+  <rect x="650" y="400" width="260" height="120" rx="8" fill="#F472B6" />
+  <text x="780" y="425" class="box-title" text-anchor="middle">Grafana Tempo Engine</text>
+  <text x="660" y="450" class="box-text">Port: 3200</text>
+  <text x="660" y="468" class="box-text">Distributed Tracing</text>
+  <text x="660" y="486" class="box-text">OTLP Traces Receiver</text>
+  <text x="660" y="504" class="box-text">Span &amp; Block Storage</text>
+
+  <!-- Right: Grafana UI -->
+  <rect x="980" y="200" width="260" height="220" rx="8" fill="#0EA5A4" />
+  <text x="1110" y="225" class="box-title" text-anchor="middle">Grafana UI Platform</text>
+  <text x="990" y="250" class="box-text">Port: 3000</text>
+  <text x="990" y="268" class="box-text">Unified Dashboard</text>
+  <text x="990" y="286" class="box-text">Prometheus Metrics</text>
+  <text x="990" y="304" class="box-text">Loki Log Explorer</text>
+  <text x="990" y="322" class="box-text">Tempo Trace Viewer</text>
+  <text x="990" y="340" class="box-text">Unified Alerting</text>
+
+  <!-- Arrows -->
+  <!-- FastAPI -> Collector -->
+  <path class="arrow" d="M280 180 L320 260" />
+  <text x="300" y="200" class="edge-label">OTLP HTTP</text>
+
+  <!-- Inference -> Collector -->
+  <path class="arrow" d="M280 320 L320 300" />
+  <text x="300" y="310" class="edge-label">OTLP HTTP</text>
+
+  <!-- Trainer -> Collector -->
+  <path class="arrow" d="M280 460 L320 360" />
+  <text x="300" y="410" class="edge-label">OTLP HTTP</text>
+
+  <!-- Collector -> Prometheus (Metrics 8889) -->
+  <path class="arrow" stroke="#B91C1C" d="M620 300 L650 180" />
+  <text x="620" y="250" class="edge-label">Metrics (8889)</text>
+
+  <!-- Collector -> Loki (Logs) -->
+  <path class="arrow" stroke="#15803D" d="M620 320 L650 320" />
+  <text x="620" y="335" class="edge-label">OTLP Logs</text>
+
+  <!-- Collector -> Tempo (Traces) -->
+  <path class="arrow" stroke="#BE185D" d="M620 340 L650 420" />
+  <text x="620" y="370" class="edge-label">OTLP Traces</text>
+
+  <!-- Prometheus -> Grafana -->
+  <path class="arrow" d="M910 180 L980 260" />
+  <text x="940" y="200" class="edge-label">PromQL</text>
+
+  <!-- Loki -> Grafana -->
+  <path class="arrow" d="M910 320 L980 280" />
+  <text x="940" y="300" class="edge-label">LogQL</text>
+
+  <!-- Tempo -> Grafana -->
+  <path class="arrow" d="M910 420 L980 320" />
+  <text x="940" y="360" class="edge-label">Trace Search</text>
+
+</svg>
